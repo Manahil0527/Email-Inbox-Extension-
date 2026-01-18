@@ -81,6 +81,39 @@ h1 {
   box-shadow: 0 0 0 2px var(--bg-color), 0 0 8px var(--success);
 }
 
+.status-banner {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+  text-align: center;
+  animation: slideDown 0.3s ease-out;
+}
+
+.status-banner.error {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Total Overview */
 .total-overview {
   text-align: center;

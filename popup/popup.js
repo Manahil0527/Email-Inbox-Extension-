@@ -5,7 +5,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const socialCountEl = document.getElementById('social-count');
     const promotionsCountEl = document.getElementById('promotions-count');
     const statusIndicator = document.getElementById('gmail-status');
+    const statusBanner = document.getElementById('status-banner');
+    const statusText = document.getElementById('status-text');
     const refreshBtn = document.getElementById('refresh-data');
+
+    /**
+     * Updates the status banner with a message and optional error state.
+     */
+    const showStatus = (message, isError = false) => {
+        statusBanner.classList.remove('hidden');
+        statusBanner.classList.toggle('error', isError);
+        statusText.textContent = message;
+    };
+
+    const hideStatus = () => {
+        statusBanner.classList.add('hidden');
+    };
 
     /**
      * Updates the UI with counts from the content script.
@@ -13,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateUI = (data) => {
         if (!data) return;
 
-        // Use animation for count update
+        hideStatus();
         animateCount(totalCountEl, data.total || 0);
         animateCount(primaryCountEl, data.primary || 0);
         animateCount(socialCountEl, data.social || 0);
@@ -47,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * Request fresh counts from the content script.
      */
     const fetchData = () => {
-        totalCountEl.textContent = '...'; // Visual cue that we are fetching
+        totalCountEl.textContent = '...';
+        showStatus('Fetching latest data...');
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const currentTab = tabs[0];
@@ -57,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (chrome.runtime.lastError) {
                         console.warn('Communication error:', chrome.runtime.lastError.message);
                         statusIndicator.classList.remove('active');
-                        statusIndicator.title = 'Content script not ready. Try refreshing Gmail.';
+                        showStatus('Gmail is loading or script not ready...', true);
                         totalCountEl.textContent = '0';
                         return;
                     }
@@ -65,12 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response) {
                         updateUI(response);
                     } else {
+                        showStatus('No response from Gmail page.', true);
                         totalCountEl.textContent = '0';
                     }
                 });
             } else {
                 statusIndicator.classList.remove('active');
-                statusIndicator.title = 'Please switch to your Gmail tab';
+                showStatus('Please open your Gmail tab', true);
                 totalCountEl.textContent = '--';
                 [primaryCountEl, socialCountEl, promotionsCountEl].forEach(el => el.textContent = '--');
             }
