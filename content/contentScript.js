@@ -49,7 +49,6 @@
 
     /**
      * High-efficiency scan for unread and important emails.
-     * Uses class-first detection to avoid layout thrashing.
      */
     const detectUnreadEmails = () => {
         const rows = window.getAllGmailElements(window.GMAIL_SELECTORS.EMAIL_ROW);
@@ -58,10 +57,8 @@
         const currentUnread = [];
 
         rows.forEach(row => {
-            // 1. Check for Gmail's unread class - FASTEST
             let isUnread = row.classList.contains('zE');
 
-            // 2. Fallback to ARIA labels if class is missing but row looks unread
             if (!isUnread) {
                 const hiddenText = row.querySelector('.yP, .zF')?.getAttribute('aria-label') || '';
                 if (hiddenText.toLowerCase().includes('unread')) {
@@ -69,10 +66,8 @@
                 }
             }
 
-            // 3. Last resort: Style check (Avoid if possible)
             if (!isUnread) {
                 const subject = row.querySelector(window.GMAIL_SELECTORS.SUBJECT);
-                // We only check style if we haven't found unread status yet
                 if (subject && window.getComputedStyle(subject).fontWeight >= 700) {
                     isUnread = true;
                 }
@@ -92,7 +87,6 @@
 
                 emailData.isImportant = window.IMPORTANCE_RULES.isImportant(emailData);
 
-                // Apply visual highlighting
                 if (emailData.isImportant) {
                     row.classList.add('inbox-flow-important-row');
                 } else {
@@ -108,7 +102,6 @@
         unreadEmails = currentUnread;
         const totalUnreadFromTabs = updateTabCounts();
 
-        // Proactive update to listeners
         chrome.runtime.sendMessage({
             type: 'UNREAD_EMAILS_UPDATED',
             totalCount: totalUnreadFromTabs,
@@ -135,7 +128,6 @@
 
     /**
      * Robust MutationObserver for high-performance dynamic updates.
-     * Watches for new rows and tab count changes.
      */
     const observeGmailChanges = () => {
         let debounceTimer;
@@ -146,43 +138,54 @@
                 return;
             }
 
-            // Check if any mutation is relevant to avoid unnecessary scans
             const hasRelevantChange = mutations.some(mutation => {
-                // If nodes were added, check if they are (or contain) email rows
                 if (mutation.addedNodes.length > 0) return true;
-
-                // If attributes changed (like unread state classes)
                 if (mutation.type === 'attributes' &&
                     (mutation.target.classList?.contains('zA') ||
                         mutation.target.classList?.contains('bsU'))) {
                     return true;
                 }
-
                 return false;
             });
 
             if (hasRelevantChange) {
                 clearTimeout(debounceTimer);
-                // Lower debounce time (500ms) for better responsiveness during scroll
                 debounceTimer = setTimeout(detectUnreadEmails, 500);
             }
         });
 
-        // Watch the whole body but filtered by the logic above for efficiency
         observer.observe(document.body, {
             childList: true,
             subtree: true,
             attributes: true,
-            attributeFilter: ['class'] // We care about class changes for unread status
+            attributeFilter: ['class']
         });
     };
 
-    // Initial load handler
+    /**
+     * Message listener for on-demand requests.
+     */
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.type === 'GET_UNREAD_COUNTS') {
+            const total = updateTabCounts();
+            sendResponse({
+                total: total,
+                primary: tabCounts.primary,
+                social: tabCounts.social,
+                promotions: tabCounts.promotions,
+                updates: tabCounts.updates,
+                forums: tabCounts.forums,
+                visibleUnread: unreadEmails
+            });
+        }
+        return true;
+    });
+
+    // Startup
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
         if (isGmailReady()) {
             startExtension();
         } else {
-            console.log('⏳ Inbox Flow: Waiting for Gmail UI...');
             observeGmailChanges();
         }
     } else {
