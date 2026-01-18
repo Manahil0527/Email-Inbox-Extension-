@@ -1,43 +1,140 @@
 /* 
- * Inbox Flow - Content Styles
- * Scoped highlighting for important emails in Gmail.
+ * Inbox Flow - TOTAL MAKEOVER THEME
+ * A complete, premium redesign of the Gmail interface.
  */
 
-/* Container for our highlights to ensure they sit nicely over the Gmail row */
-.inbox-flow-important-row {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%) !important;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+:root {
+    --inbox-flow-primary: #6366f1;
+    --inbox-flow-secondary: #a855f7;
+    --inbox-flow-accent: #f472b6;
+    --inbox-flow-glass: rgba(255, 255, 255, 0.7);
+    --inbox-flow-bg: #f8fafc;
+    --inbox-flow-card-shadow: 0 4px 20px -2px rgba(99, 102, 241, 0.15);
 }
 
-/* Side indicator for importance */
-.inbox-flow-important-row::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 4px;
-    background: linear-gradient(to bottom, #6366f1, #a855f7);
-    z-index: 10;
-    pointer-events: none;
-    box-shadow: 2px 0 8px rgba(99, 102, 241, 0.3);
+/* 🌈 Global Background & Layout */
+body.inbox-flow-loaded {
+    background-color: #f1f5f9 !important;
+    font-family: 'Outfit', 'Segoe UI', sans-serif !important;
 }
 
-/* Hover state enhancement - Make it feel interactive */
-.inbox-flow-important-row:hover {
-    background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, transparent 100%) !important;
-    transform: translateX(2px);
+/* 💎 Transparent Glassmorphism for Main Container */
+.nH.bkK,
+.nH.oy8Mbf {
+    background: transparent !important;
 }
 
-/* Add a subtle "Priority" tag simulation using text color if needed */
-.inbox-flow-important-row .yW {
-    /* Sender area */
+/* 🖼️ The Central Mail Card */
+.ae4.a98.Tabletree,
+.UI {
+    background: var(--inbox-flow-glass) !important;
+    backdrop-filter: blur(16px) !important;
+    border-radius: 24px !important;
+    margin: 15px !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: var(--inbox-flow-card-shadow) !important;
+    overflow: hidden !important;
+}
+
+/* ⚡ Modern Row Styling */
+tr.zA {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+    margin: 4px 10px !important;
+    border-radius: 12px !important;
+}
+
+tr.zA:hover {
+    transform: scale(1.01) translateY(-2px) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
+    z-index: 10 !important;
+    background-color: white !important;
+}
+
+/* 🌟 Important Row Highlight - ULTRA VIBRANT */
+tr.inbox-flow-important-row {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.05) 100%) !important;
+    border-left: 6px solid #6366f1 !important;
+}
+
+tr.inbox-flow-important-row::before {
+    display: none;
+    /* We use border-left now for better compatibility with layout */
+}
+
+/* 🎨 Category Tab Customization */
+[role="tab"] {
+    border-radius: 12px 12px 0 0 !important;
+    transition: all 0.2s ease !important;
+    margin: 0 4px !important;
+}
+
+[role="tab"][aria-selected="true"] {
+    background: white !important;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Tab Colors */
+[role="tab"][aria-label*="Primary"] .aKa {
     color: #6366f1 !important;
-    font-weight: 600 !important;
 }
 
-/* Ensure our border doesn't overlap text */
-.inbox-flow-important-row .yX {
-    padding-left: 12px !important;
+[role="tab"][aria-label*="Social"] .aKa {
+    color: #3b82f6 !important;
+}
+
+[role="tab"][aria-label*="Promotions"] .aKa {
+    color: #10b981 !important;
+}
+
+[role="tab"][aria-label*="Updates"] .aKa {
+    color: #f59e0b !important;
+}
+
+/* 🚀 Colorful Sidebar */
+.aeN {
+    background: transparent !important;
+    padding-right: 10px !important;
+}
+
+.T-I-KE {
+    /* Compose Button */
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4) !important;
+    border: none !important;
+    border-radius: 16px !important;
+    color: white !important;
+    transform: rotate(-1deg) !important;
+    transition: all 0.3s ease !important;
+}
+
+.T-I-KE:hover {
+    transform: rotate(0deg) scale(1.05) !important;
+    box-shadow: 0 15px 20px -3px rgba(99, 102, 241, 0.5) !important;
+}
+
+/* 🔍 Search Bar Redesign */
+.gb_fe {
+    background: white !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* 🧹 Clean up scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.5);
 }

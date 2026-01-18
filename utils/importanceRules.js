@@ -10,10 +10,11 @@ window.IMPORTANCE_RULES = {
         'github.com',
         'calendar-notification@google.com',
         'linkedin.com',
-        'slack.com'
+        'slack.com',
+        'fimini'
     ],
 
-    // Keywords that, if found in the subject or snippet, mark an email as important
+    // Keywords that, if found in the sender, subject, or snippet, mark an email as important
     IMPORTANT_KEYWORDS: [
         'urgent',
         'action required',
@@ -26,12 +27,15 @@ window.IMPORTANCE_RULES = {
         'password',
         'security alert',
         'deadline',
+        'fiminico',
+        'fimini co',
+        'fimini',
         'fahad jameel'
     ],
 
     /**
      * Checks if an email is important based on its sender, subject, and snippet.
-     * Performs case-insensitive partial matching.
+     * Performs case-insensitive partial matching across all fields.
      */
     isImportant: ({ sender, subject, snippet }) => {
         const rules = window.IMPORTANCE_RULES;
@@ -39,17 +43,19 @@ window.IMPORTANCE_RULES = {
         const sub = (subject || '').toLowerCase();
         const snip = (snippet || '').toLowerCase();
 
-        // Check Important Senders (Partial Match)
-        const isImportantSender = rules.IMPORTANT_SENDERS.some(importantSender =>
+        // 1. Check Explicit Important Senders (Partial Match)
+        const matchesSender = rules.IMPORTANT_SENDERS.some(importantSender =>
             s.includes(importantSender.toLowerCase())
         );
 
-        if (isImportantSender) return true;
+        if (matchesSender) return true;
 
-        // Check Important Keywords in Subject or Snippet
+        // 2. Check Keywords in Sender, Subject, OR Snippet (Maximum Coverage)
         const hasKeyword = rules.IMPORTANT_KEYWORDS.some(keyword => {
-            currentKeyword = keyword.toLowerCase();
-            return sub.includes(currentKeyword) || snip.includes(currentKeyword);
+            const currentKeyword = keyword.toLowerCase();
+            return s.includes(currentKeyword) ||
+                sub.includes(currentKeyword) ||
+                snip.includes(currentKeyword);
         });
 
         return hasKeyword;

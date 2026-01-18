@@ -32,6 +32,9 @@ window.GMAIL_SELECTORS = {
     MAIN_INBOX_CONTAINER: '.nH.bkK',
     SIDEBAR: '.bhZ',
     SEARCH_BAR: 'input[name="q"]',
+    HEADER: 'header.gb_Ra',
+    GMAIL_BODY: 'body',
+    SIDEBAR_WRAPPER: '.aeN',
 
     // --- Buttons ---
     COMPOSE_BTN: '.T-I.T-I-KE.L3',

@@ -17,6 +17,18 @@
     };
 
     /**
+     * Injects premium fonts into the Gmail document.
+     */
+    const injectFonts = () => {
+        if (document.getElementById('inbox-flow-fonts')) return;
+        const link = document.createElement('link');
+        link.id = 'inbox-flow-fonts';
+        link.rel = 'stylesheet';
+        link.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap';
+        document.head.appendChild(link);
+    };
+
+    /**
      * Safety check to ensure Gmail's core UI components are loaded.
      */
     const isGmailReady = () => {
@@ -48,9 +60,9 @@
     };
 
     /**
-     * High-efficiency scan for unread and important emails.
+     * High-efficiency scan for emails.
      */
-    const detectUnreadEmails = () => {
+    const scanEmails = () => {
         const rows = window.getAllGmailElements(window.GMAIL_SELECTORS.EMAIL_ROW);
         if (rows.length === 0) return;
 
@@ -58,7 +70,6 @@
 
         rows.forEach(row => {
             let isUnread = row.classList.contains('zE');
-
             if (!isUnread) {
                 const hiddenText = row.querySelector('.yP, .zF')?.getAttribute('aria-label') || '';
                 if (hiddenText.toLowerCase().includes('unread')) {
@@ -66,48 +77,46 @@
                 }
             }
 
-            if (!isUnread) {
-                const subject = row.querySelector(window.GMAIL_SELECTORS.SUBJECT);
-                if (subject && window.getComputedStyle(subject).fontWeight >= 700) {
-                    isUnread = true;
-                }
+            const senderArea = row.querySelector(window.GMAIL_SELECTORS.SENDER);
+            const subjectArea = row.querySelector(window.GMAIL_SELECTORS.SUBJECT);
+            const snippetArea = row.querySelector(window.GMAIL_SELECTORS.SNIPPET);
+
+            const sender = senderArea?.innerText?.trim() || senderArea?.textContent?.trim() || 'Unknown';
+            const subject = subjectArea?.innerText?.trim() || subjectArea?.textContent?.trim() || 'No Subject';
+            const snippet = snippetArea?.innerText?.trim() || snippetArea?.textContent?.trim() || '';
+
+            const emailData = {
+                id: row.id || Math.random().toString(36).substr(2, 9),
+                sender,
+                subject,
+                snippet,
+                isUnread
+            };
+
+            const isImportant = window.IMPORTANCE_RULES.isImportant(emailData);
+
+            if (isImportant) {
+                row.classList.add('inbox-flow-important-row');
+            } else {
+                row.classList.remove('inbox-flow-important-row');
             }
 
             if (isUnread) {
-                const sender = row.querySelector(window.GMAIL_SELECTORS.SENDER)?.textContent?.trim() || 'Unknown';
-                const subject = row.querySelector(window.GMAIL_SELECTORS.SUBJECT)?.textContent?.trim() || 'No Subject';
-                const snippet = row.querySelector(window.GMAIL_SELECTORS.SNIPPET)?.textContent?.trim() || '';
-
-                const emailData = {
-                    id: row.id || Math.random().toString(36).substr(2, 9),
-                    sender,
-                    subject,
-                    snippet
-                };
-
-                emailData.isImportant = window.IMPORTANCE_RULES.isImportant(emailData);
-
-                if (emailData.isImportant) {
-                    row.classList.add('inbox-flow-important-row');
-                } else {
-                    row.classList.remove('inbox-flow-important-row');
-                }
-
                 currentUnread.push(emailData);
-            } else {
-                row.classList.remove('inbox-flow-important-row');
             }
         });
 
         unreadEmails = currentUnread;
         const totalUnreadFromTabs = updateTabCounts();
 
-        chrome.runtime.sendMessage({
-            type: 'UNREAD_EMAILS_UPDATED',
-            totalCount: totalUnreadFromTabs,
-            tabCounts: tabCounts,
-            visibleUnread: unreadEmails
-        });
+        if (chrome.runtime && chrome.runtime.id) {
+            chrome.runtime.sendMessage({
+                type: 'UNREAD_EMAILS_UPDATED',
+                totalCount: totalUnreadFromTabs,
+                tabCounts: tabCounts,
+                visibleUnread: unreadEmails
+            }).catch(() => { });
+        }
     };
 
     /**
@@ -116,13 +125,16 @@
     const startExtension = () => {
         if (isInitialized) return;
 
-        console.log('✅ Inbox Flow: Gmail is ready. Starting features...');
+        console.log('✅ Inbox Flow: Total Makeover Active.');
         isInitialized = true;
         document.body.classList.add('inbox-flow-loaded');
+        injectFonts();
 
-        chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' });
+        if (chrome.runtime && chrome.runtime.id) {
+            chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' }).catch(() => { });
+        }
 
-        detectUnreadEmails();
+        scanEmails();
         observeGmailChanges();
     };
 
@@ -150,7 +162,7 @@
 
             if (hasRelevantChange) {
                 clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(detectUnreadEmails, 500);
+                debounceTimer = setTimeout(scanEmails, 500);
             }
         });
 
@@ -163,7 +175,7 @@
     };
 
     /**
-     * Message listener for on-demand requests.
+     * Message listener.
      */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.type === 'GET_UNREAD_COUNTS') {
