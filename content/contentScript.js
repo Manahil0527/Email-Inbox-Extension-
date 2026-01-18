@@ -1,6 +1,6 @@
 /**
  * Inbox Flow - Content Script
- * Handles initialization, unread email detection, and tab-based categorization.
+ * Handles initialization, unread email detection, and messaging.
  */
 
 (function () {
@@ -36,7 +36,6 @@
             const tabElement = window.getGmailElement(selector);
 
             if (tabElement) {
-                // Find the count badge within the tab
                 const countBadge = tabElement.querySelector(window.GMAIL_SELECTORS.UNREAD_COUNT);
                 const count = countBadge ? parseInt(countBadge.textContent.replace(/,/g, ''), 10) || 0 : 0;
 
@@ -89,9 +88,7 @@
         unreadEmails = currentUnread;
         const totalUnreadFromTabs = updateTabCounts();
 
-        console.log(`📊 Inbox Flow: ${totalUnreadFromTabs} total unread (Primary: ${tabCounts.primary}, Social: ${tabCounts.social}, Promo: ${tabCounts.promotions})`);
-
-        // Broadcast the update
+        // Broadcast the update proactively
         chrome.runtime.sendMessage({
             type: 'UNREAD_EMAILS_UPDATED',
             totalCount: totalUnreadFromTabs,
@@ -99,6 +96,24 @@
             visibleUnread: unreadEmails
         });
     };
+
+    /**
+     * Listen for messages from the popup or background script.
+     */
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        if (request.type === 'GET_UNREAD_COUNTS') {
+            const total = updateTabCounts(); // Ensure fresh data
+            sendResponse({
+                total: total,
+                primary: tabCounts.primary,
+                social: tabCounts.social,
+                promotions: tabCounts.promotions,
+                updates: tabCounts.updates,
+                forums: tabCounts.forums
+            });
+        }
+        return true; // Keep channel open
+    });
 
     /**
      * Main initialization logic.
