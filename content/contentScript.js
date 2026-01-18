@@ -48,7 +48,7 @@
     };
 
     /**
-     * Scans the current view for unread email details.
+     * Scans the current view for unread email details and assesses importance.
      */
     const detectUnreadEmails = () => {
         const rows = window.getAllGmailElements(window.GMAIL_SELECTORS.EMAIL_ROW);
@@ -76,12 +76,17 @@
                 const subject = row.querySelector(window.GMAIL_SELECTORS.SUBJECT)?.textContent?.trim() || 'No Subject';
                 const snippet = row.querySelector(window.GMAIL_SELECTORS.SNIPPET)?.textContent?.trim() || '';
 
-                currentUnread.push({
+                const emailData = {
                     id: row.id || Math.random().toString(36).substr(2, 9),
                     sender,
                     subject,
                     snippet
-                });
+                };
+
+                // Use the rule engine to determine importance
+                emailData.isImportant = window.IMPORTANCE_RULES.isImportant(emailData);
+
+                currentUnread.push(emailData);
             }
         });
 
@@ -102,17 +107,18 @@
      */
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         if (request.type === 'GET_UNREAD_COUNTS') {
-            const total = updateTabCounts(); // Ensure fresh data
+            const total = updateTabCounts();
             sendResponse({
                 total: total,
                 primary: tabCounts.primary,
                 social: tabCounts.social,
                 promotions: tabCounts.promotions,
                 updates: tabCounts.updates,
-                forums: tabCounts.forums
+                forums: tabCounts.forums,
+                visibleUnread: unreadEmails
             });
         }
-        return true; // Keep channel open
+        return true;
     });
 
     /**

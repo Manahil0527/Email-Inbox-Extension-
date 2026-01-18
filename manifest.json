@@ -29,6 +29,7 @@
             ],
             "js": [
                 "utils/gmailSelectors.js",
+                "utils/importanceRules.js",
                 "content/contentScript.js"
             ],
             "css": [
