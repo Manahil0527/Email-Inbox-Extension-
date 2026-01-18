@@ -1,0 +1,5 @@
+/* CSS for injected elements will go here */
+.inbox-flow-highlight {
+    border: 2px solid #6366f1 !important;
+    background-color: rgba(99, 102, 241, 0.05) !important;
+}
