@@ -1,5 +1,34 @@
-/* CSS for injected elements will go here */
-.inbox-flow-highlight {
-    border: 2px solid #6366f1 !important;
-    background-color: rgba(99, 102, 241, 0.05) !important;
+/* 
+ * Inbox Flow - Content Styles
+ * Scoped highlighting for important emails in Gmail.
+ */
+
+/* Container for our highlights to ensure they sit nicely over the Gmail row */
+.inbox-flow-important-row {
+    background-color: rgba(99, 102, 241, 0.08) !important;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+/* Side indicator for importance */
+.inbox-flow-important-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, #6366f1, #a855f7);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Hover state enhancement */
+.inbox-flow-important-row:hover {
+    background-color: rgba(99, 102, 241, 0.12) !important;
+}
+
+/* Ensure our border doesn't overlap text if Gmail's padding is tight */
+.inbox-flow-important-row .yX {
+    padding-left: 8px !important;
 }

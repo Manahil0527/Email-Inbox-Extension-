@@ -1,6 +1,6 @@
 /**
  * Inbox Flow - Content Script
- * Handles initialization, unread email detection, and messaging.
+ * Handles initialization, unread email detection, and visual highlighting.
  */
 
 (function () {
@@ -48,7 +48,7 @@
     };
 
     /**
-     * Scans the current view for unread email details and assesses importance.
+     * Scans the current view for unread email details and assess importance.
      */
     const detectUnreadEmails = () => {
         const rows = window.getAllGmailElements(window.GMAIL_SELECTORS.EMAIL_ROW);
@@ -86,7 +86,17 @@
                 // Use the rule engine to determine importance
                 emailData.isImportant = window.IMPORTANCE_RULES.isImportant(emailData);
 
+                // Apply or remove highlighting based on importance
+                if (emailData.isImportant) {
+                    row.classList.add('inbox-flow-important-row');
+                } else {
+                    row.classList.remove('inbox-flow-important-row');
+                }
+
                 currentUnread.push(emailData);
+            } else {
+                // Remove highlight if email is read
+                row.classList.remove('inbox-flow-important-row');
             }
         });
 
