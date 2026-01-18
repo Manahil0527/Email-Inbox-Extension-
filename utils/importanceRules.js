@@ -25,7 +25,8 @@ window.IMPORTANCE_RULES = {
         'receipt',
         'password',
         'security alert',
-        'deadline'
+        'deadline',
+        'fahad jameel'
     ],
 
     /**
