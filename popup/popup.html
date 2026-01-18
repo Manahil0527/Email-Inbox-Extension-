@@ -14,33 +14,61 @@
 <body>
   <div class="container">
     <header>
-      <img src="../assets/icons/icon48.png" alt="Logo" class="logo">
-      <h1>Inbox Flow</h1>
+      <div class="brand">
+        <img src="../assets/icons/icon48.png" alt="Logo" class="logo">
+        <h1>Inbox Flow</h1>
+      </div>
+      <div class="status-indicator" id="gmail-status" title="Connecting to Gmail..."></div>
     </header>
 
     <main>
-      <div class="status-card">
-        <div class="status-indicator active"></div>
-        <div class="status-text">
-          <span class="label">Extension Status</span>
-          <span class="value">Active on Gmail</span>
+      <!-- Total Overview -->
+      <section class="total-overview">
+        <div class="total-card">
+          <span class="total-label">Total Unread</span>
+          <span id="total-count" class="total-value">0</span>
         </div>
-      </div>
+      </section>
+
+      <!-- Category Breakdown -->
+      <section class="categories">
+        <div class="category-grid">
+          <div class="category-card primary" data-tab="primary">
+            <div class="category-icon">📥</div>
+            <div class="category-info">
+              <span class="category-label">Primary</span>
+              <span id="primary-count" class="category-count">0</span>
+            </div>
+          </div>
+
+          <div class="category-card social" data-tab="social">
+            <div class="category-icon">👥</div>
+            <div class="category-info">
+              <span class="category-label">Social</span>
+              <span id="social-count" class="category-count">0</span>
+            </div>
+          </div>
+
+          <div class="category-card promotions" data-tab="promotions">
+            <div class="category-icon">🏷️</div>
+            <div class="category-info">
+              <span class="category-label">Promotions</span>
+              <span id="promotions-count" class="category-count">0</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <div class="actions">
-        <button id="toggle-highlights" class="btn primary">
-          <span class="icon">✨</span>
-          Smart Highlights
-        </button>
-        <button id="open-settings" class="btn secondary">
-          <span class="icon">⚙️</span>
-          Settings
+        <button id="refresh-data" class="btn secondary">
+          <span class="icon">🔄</span>
+          Refresh Results
         </button>
       </div>
     </main>
 
     <footer>
-      <p>Version 1.0.0</p>
+      <p>Version 1.0.0 • <a href="#" id="settings-link">Settings</a></p>
     </footer>
   </div>
   <script src="popup.js"></script>
