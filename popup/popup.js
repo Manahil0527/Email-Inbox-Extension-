@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusBanner.classList.remove('hidden');
         statusBanner.classList.toggle('error', isError);
         statusText.textContent = message;
+        document.getElementById('status-icon').textContent = isError ? '⚠️' : '✨';
     };
 
     const hideStatus = () => {
@@ -35,22 +36,34 @@ document.addEventListener('DOMContentLoaded', () => {
         animateCount(promotionsCountEl, data.promotions || 0);
 
         statusIndicator.classList.add('active');
-        statusIndicator.title = 'Connected to Gmail';
+        statusIndicator.title = 'Connected to Gmail Dashboard';
+
+        // Trigger a subtle scale animation on the hero card
+        const heroCard = document.querySelector('.main-stats-card');
+        heroCard.style.transform = 'scale(1.02)';
+        setTimeout(() => heroCard.style.transform = 'translateY(0)', 300);
     };
 
     /**
-     * Simple animation for counting numbers.
+     * Refined count animation with easing.
      */
     const animateCount = (el, target) => {
         const start = parseInt(el.textContent, 10) || 0;
-        const duration = 500;
+        if (start === target) return;
+
+        const duration = 800;
         let startTime = null;
+
+        const easeOutExpo = (t) => t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
 
         const animation = (currentTime) => {
             if (!startTime) startTime = currentTime;
             const progress = Math.min((currentTime - startTime) / duration, 1);
-            const current = Math.floor(progress * (target - start) + start);
+            const easedProgress = easeOutExpo(progress);
+            const current = Math.floor(easedProgress * (target - start) + start);
+
             el.textContent = current;
+
             if (progress < 1) {
                 requestAnimationFrame(animation);
             }
@@ -62,34 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
      * Request fresh counts from the content script.
      */
     const fetchData = () => {
-        totalCountEl.textContent = '...';
-        showStatus('Fetching latest data...');
+        totalCountEl.parentElement.classList.add('loading-pulse');
+        showStatus('Analyzing Inbox...');
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const currentTab = tabs[0];
 
             if (currentTab?.url && currentTab.url.includes('mail.google.com')) {
                 chrome.tabs.sendMessage(currentTab.id, { type: 'GET_UNREAD_COUNTS' }, (response) => {
+                    totalCountEl.parentElement.classList.remove('loading-pulse');
                     if (chrome.runtime.lastError) {
-                        console.warn('Communication error:', chrome.runtime.lastError.message);
                         statusIndicator.classList.remove('active');
-                        showStatus('Gmail is loading or script not ready...', true);
-                        totalCountEl.textContent = '0';
+                        showStatus('Gmail is waking up...', true);
                         return;
                     }
 
                     if (response) {
                         updateUI(response);
-                    } else {
-                        showStatus('No response from Gmail page.', true);
-                        totalCountEl.textContent = '0';
                     }
                 });
             } else {
+                totalCountEl.parentElement.classList.remove('loading-pulse');
                 statusIndicator.classList.remove('active');
-                showStatus('Please open your Gmail tab', true);
-                totalCountEl.textContent = '--';
-                [primaryCountEl, socialCountEl, promotionsCountEl].forEach(el => el.textContent = '--');
+                showStatus('Unlock data on Gmail tab', true);
+                [totalCountEl, primaryCountEl, socialCountEl, promotionsCountEl].forEach(el => el.textContent = '--');
             }
         });
     };
@@ -98,10 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchData();
 
     // Refresh button event
-    refreshBtn.addEventListener('click', () => {
-        refreshBtn.classList.add('loading');
+    refreshBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         fetchData();
-        setTimeout(() => refreshBtn.classList.remove('loading'), 500);
     });
 
     // Listen for proactive updates from content script
@@ -114,5 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 promotions: message.tabCounts.promotions
             });
         }
+    });
+
+    // Interactive hover effects for category items
+    document.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            const icon = item.querySelector('.item-icon');
+            icon.style.transform = 'rotate(12deg) scale(1.1)';
+        });
+        item.addEventListener('mouseleave', () => {
+            const icon = item.querySelector('.item-icon');
+            icon.style.transform = 'rotate(0) scale(1)';
+        });
     });
 });

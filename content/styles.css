@@ -5,9 +5,9 @@
 
 /* Container for our highlights to ensure they sit nicely over the Gmail row */
 .inbox-flow-important-row {
-    background-color: rgba(99, 102, 241, 0.08) !important;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.08) 0%, transparent 100%) !important;
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Side indicator for importance */
@@ -21,14 +21,23 @@
     background: linear-gradient(to bottom, #6366f1, #a855f7);
     z-index: 10;
     pointer-events: none;
+    box-shadow: 2px 0 8px rgba(99, 102, 241, 0.3);
 }
 
-/* Hover state enhancement */
+/* Hover state enhancement - Make it feel interactive */
 .inbox-flow-important-row:hover {
-    background-color: rgba(99, 102, 241, 0.12) !important;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.12) 0%, transparent 100%) !important;
+    transform: translateX(2px);
 }
 
-/* Ensure our border doesn't overlap text if Gmail's padding is tight */
+/* Add a subtle "Priority" tag simulation using text color if needed */
+.inbox-flow-important-row .yW {
+    /* Sender area */
+    color: #6366f1 !important;
+    font-weight: 600 !important;
+}
+
+/* Ensure our border doesn't overlap text */
 .inbox-flow-important-row .yX {
-    padding-left: 8px !important;
+    padding-left: 12px !important;
 }

@@ -4,75 +4,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Inbox Flow</title>
+  <title>Inbox Flow | Premium Email Assistant</title>
   <link rel="stylesheet" href="popup.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Plus+Jakarta+Sans:wght@400;700&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
   <div class="container">
+    <!-- Premium Header Area -->
     <header>
-      <div class="brand">
-        <img src="../assets/icons/icon48.png" alt="Logo" class="logo">
-        <h1>Inbox Flow</h1>
+      <div class="brand-group">
+        <div class="logo-wrapper">
+          <img src="../assets/icons/icon48.png" alt="Logo" class="logo">
+          <div class="logo-pulse"></div>
+        </div>
+        <div class="brand-text">
+          <h1>Inbox Flow</h1>
+          <span class="tagline">Intelligence for Gmail</span>
+        </div>
       </div>
-      <div class="status-indicator" id="gmail-status" title="Connecting to Gmail..."></div>
+      <div class="status-indicator" id="gmail-status" title="Connection Status"></div>
     </header>
 
+    <!-- Dynamic Status Banner -->
     <div id="status-banner" class="status-banner hidden">
-      <span id="status-text">Connecting to Gmail...</span>
+      <div class="banner-content">
+        <span id="status-icon">✨</span>
+        <span id="status-text">Synchronizing...</span>
+      </div>
     </div>
 
     <main>
-      <!-- Total Overview -->
-      <section class="total-overview">
-        <div class="total-card">
-          <span class="total-label">Total Unread</span>
-          <span id="total-count" class="total-value">0</span>
+      <!-- Hero Stats Card -->
+      <section class="hero-stats">
+        <div class="main-stats-card">
+          <div class="stats-bg-glow"></div>
+          <span class="stats-label">TOTAL UNREAD</span>
+          <div class="stats-value-wrapper">
+            <span id="total-count" class="stats-value">0</span>
+            <div class="stats-trend">New</div>
+          </div>
         </div>
       </section>
 
-      <!-- Category Breakdown -->
-      <section class="categories">
+      <!-- Category Grid -->
+      <section class="category-section">
+        <h2 class="section-title">Inbox Channels</h2>
         <div class="category-grid">
-          <div class="category-card primary" data-tab="primary">
-            <div class="category-icon">📥</div>
-            <div class="category-info">
-              <span class="category-label">Primary</span>
-              <span id="primary-count" class="category-count">0</span>
+          <div class="category-item primary" data-tab="primary">
+            <div class="item-icon">⚡</div>
+            <div class="item-details">
+              <span class="item-label">Primary</span>
+              <span id="primary-count" class="item-count">0</span>
             </div>
           </div>
 
-          <div class="category-card social" data-tab="social">
-            <div class="category-icon">👥</div>
-            <div class="category-info">
-              <span class="category-label">Social</span>
-              <span id="social-count" class="category-count">0</span>
+          <div class="category-item social" data-tab="social">
+            <div class="item-icon">👥</div>
+            <div class="item-details">
+              <span class="item-label">Social</span>
+              <span id="social-count" class="item-count">0</span>
             </div>
           </div>
 
-          <div class="category-card promotions" data-tab="promotions">
-            <div class="category-icon">🏷️</div>
-            <div class="category-info">
-              <span class="category-label">Promotions</span>
-              <span id="promotions-count" class="category-count">0</span>
+          <div class="category-item promo" data-tab="promotions">
+            <div class="item-icon">🎁</div>
+            <div class="item-details">
+              <span class="item-label">Promos</span>
+              <span id="promotions-count" class="item-count">0</span>
             </div>
           </div>
         </div>
       </section>
 
-      <div class="actions">
-        <button id="refresh-data" class="btn secondary">
-          <span class="icon">🔄</span>
-          Refresh Results
-        </button>
-      </div>
+      <!-- Quick Info / Help Section -->
+      <section class="info-footer">
+        <div class="tip-card">
+          <span class="tip-icon">💡</span>
+          <p>Important emails are highlighted with a gradient border in your inbox.</p>
+        </div>
+      </section>
     </main>
 
     <footer>
-      <p>Version 1.0.0 • <a href="#" id="settings-link">Settings</a></p>
+      <div class="footer-links">
+        <span>V 1.0.0</span>
+        <div class="dot-separator"></div>
+        <a href="#" id="refresh-data">Sync Now</a>
+        <div class="dot-separator"></div>
+        <a href="#" id="settings-link">Settings</a>
+      </div>
     </footer>
   </div>
   <script src="popup.js"></script>
