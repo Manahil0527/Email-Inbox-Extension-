@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animateCount(promotionsCountEl, data.promotions || 0);
 
         statusIndicator.classList.add('active');
-        statusIndicator.title = 'Connected to Gmail Dashboard';
+        statusIndicator.title = 'All good! ✅';
 
         // Trigger a subtle scale animation on the hero card
         const heroCard = document.querySelector('.main-stats-card');
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     const fetchData = () => {
         totalCountEl.parentElement.classList.add('loading-pulse');
-        showStatus('Analyzing Inbox...');
+        showStatus('Checking... 🔍');
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const currentTab = tabs[0];
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalCountEl.parentElement.classList.remove('loading-pulse');
                     if (chrome.runtime.lastError) {
                         statusIndicator.classList.remove('active');
-                        showStatus('Gmail is waking up...', true);
+                        showStatus('Gmail is sleepy... 😴', true);
                         return;
                     }
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 totalCountEl.parentElement.classList.remove('loading-pulse');
                 statusIndicator.classList.remove('active');
-                showStatus('Unlock data on Gmail tab', true);
+                showStatus('Switch to Gmail! 📧', true);
                 [totalCountEl, primaryCountEl, socialCountEl, promotionsCountEl].forEach(el => el.textContent = '--');
             }
         });
