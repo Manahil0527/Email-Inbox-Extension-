@@ -28,6 +28,7 @@
                 "https://mail.google.com/*"
             ],
             "js": [
+                "utils/gmailSelectors.js",
                 "content/contentScript.js"
             ],
             "css": [
