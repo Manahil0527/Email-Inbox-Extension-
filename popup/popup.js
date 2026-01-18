@@ -47,21 +47,32 @@ document.addEventListener('DOMContentLoaded', () => {
      * Request fresh counts from the content script.
      */
     const fetchData = () => {
+        totalCountEl.textContent = '...'; // Visual cue that we are fetching
+
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const currentTab = tabs[0];
 
-            if (currentTab?.url?.includes('mail.google.com')) {
+            if (currentTab?.url && currentTab.url.includes('mail.google.com')) {
                 chrome.tabs.sendMessage(currentTab.id, { type: 'GET_UNREAD_COUNTS' }, (response) => {
                     if (chrome.runtime.lastError) {
-                        console.warn('Could not communicate with content script. Is Gmail open?');
+                        console.warn('Communication error:', chrome.runtime.lastError.message);
                         statusIndicator.classList.remove('active');
+                        statusIndicator.title = 'Content script not ready. Try refreshing Gmail.';
+                        totalCountEl.textContent = '0';
                         return;
                     }
-                    updateUI(response);
+
+                    if (response) {
+                        updateUI(response);
+                    } else {
+                        totalCountEl.textContent = '0';
+                    }
                 });
             } else {
                 statusIndicator.classList.remove('active');
-                statusIndicator.title = 'Please open Gmail to see stats';
+                statusIndicator.title = 'Please switch to your Gmail tab';
+                totalCountEl.textContent = '--';
+                [primaryCountEl, socialCountEl, promotionsCountEl].forEach(el => el.textContent = '--');
             }
         });
     };
